@@ -5,15 +5,19 @@ def knapsack(s_items,s_values,s_weights,M,n):
         if(curr_w+s_weights[i]<=M):
             curr_p+=s_values[i]
             curr_w+=s_weights[i]
-            selected.append(s_items[i])
+            selected.append(s_items[i]+1)
         else:
             fract=(M-curr_w)/s_weights[i]
             curr_p+=s_values[i]*fract
             curr_w+=s_weights[i]*fract
-            selected.append([round(fract,2),"part of ",s_items[i]])
+            selected.append([round(fract,2),"part of ",s_items[i]+1])
             break
     
     print(selected,curr_p)
+    print("the selected items are: ")
+    
+    for i in selected:
+        print(str(i))
 
 if __name__ == '__main__':
     n=int(input("Enter number of items: "))

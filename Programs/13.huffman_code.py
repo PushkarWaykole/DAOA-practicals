@@ -1,13 +1,4 @@
-# get character frequency from the user
-'''
-n = int(input("Enter the number of characters: "))
-chars = []
-for i in range(n):
-    ch = input("Enter the character: ")
-    freq = int(input("Enter the frequency: "))
-    node = Node(ch, freq)
-    chars.append(node)
-'''
+
 class Node():
     def __init__(self,ch, freq):
         self.ch = ch
@@ -16,6 +7,15 @@ class Node():
         self.right = None
         self.code = ""
 
+# get character frequency from the user
+
+# n = int(input("Enter the number of characters: "))
+# chars = []
+# for i in range(n):
+#     ch = input("Enter the character: ")
+#     freq = int(input("Enter the frequency: "))
+#     node = Node(ch, freq)
+#     chars.append(node)
 n = 5
 chars= [Node('a', 35),
         Node('b', 12),
@@ -58,10 +58,12 @@ def huffmanCode(node,val=''):
     if node.left is None and node.right is None:
         print(node.ch,node.code)
 
-root = chars[0]
+root = chars[0] #that is the * node
 code = ""
 
 huffmanCode(root, code)
+
+
 
 
     

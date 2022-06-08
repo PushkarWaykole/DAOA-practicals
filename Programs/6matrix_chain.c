@@ -31,9 +31,23 @@ int main(){
     
     for(int i=0;i<100;i++){
         for(int j=0;j<100;j++){
+            if(i==j){
+                dp[i][j]=0;
+            }
+            else{
+
             dp[i][j]=-1;
+            }
         }
     }
+    
     int ans=matrix_chain(arr,1,n-1);
-    printf("%d ",ans);
+    printf("The min no of multiplications are: %d ",ans);
+    printf("Cost matrix is: \n");
+    for(int i=1;i<n;i++){
+        for(int j=0;j<n;j++){
+            printf("%d\t ",dp[i][j]);
+        }
+        printf("\n");
+    }
 }

@@ -1,7 +1,6 @@
 # Prim's Algorithm in Python
-
 def prims():
-    
+    selected=[]
     INF = 9999999
     # number of vertices in graph
     V=int(input("Enter the number of vertices: "))
@@ -35,7 +34,7 @@ def prims():
         b = 0 #destination
         
         for v in range(V):
-            if selected_node[v]: #if the vertex is not selected
+            if selected_node[v]: #if the vertex is selected
                 for n in range(V): #n means the nearest neighbour vertices of the selected vertex
                     if ((not selected_node[n]) and G[v][n]):  
                         # if the vertex is not in selected and there is an edge
@@ -44,9 +43,24 @@ def prims():
                             a = v
                             b = n
         print(str(a) + "-" + str(b) + ":" + str(G[a][b]))
+        selected.append([a,b])
         selected_node[b] = True
         no_edge += 1
+    print(selected)
         
 prims()
 
+
+
+
+
+
+
+
+
+
+
+
+    
+    
 
