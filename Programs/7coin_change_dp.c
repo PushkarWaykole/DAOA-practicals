@@ -1,111 +1,113 @@
-#include<stdio.h>
-#include<stdlib.h>
+#include <stdio.h>
+#define INT_MAX 1e5
 
-void initializer(int noofcoins, int sum, int soln_matrix[][sum + 1]) //not an n x n matrix therefore two parameters needed, soln_matrix[][total noofcolumns]
+int min(int a, int b)
 {
-    int i, j;
-
-    for(i = 0; i <= noofcoins; i++)
-    {
-        for(j = 0; j <= sum; j++)
-        {
-            soln_matrix[i][j] = 0;
-        }
-    }
+    if (a < b)
+        return a;
+    return b;
 }
 
-void printer(int noofcoins, int sum, int matrix[][sum + 1]) //! V. IMP.: check how the matrix size is passed
+int coinChangeDP(int coins[], int n_coins, int amount)
 {
-    int i, j;
+    int dp[n_coins + 1][amount + 1];
 
-    for(i = 0; i <= noofcoins; i++)
+    for (int i = 0; i <= n_coins; ++i)
     {
-        for(j = 0; j <= sum; j++)
-            printf("SM[%d][%d]: \033[1m\033[38;5;225m%d \033[0m", i, j, matrix[i][j]);
-        printf("\n");
-    }
-}
-
-int* coinchange(int noofcoins, int sum, int soln_matrix[][sum + 1], int* coins)
-{
-    int i = 1, j = 1, k;
-    static int* selected_coins;
-    selected_coins = (int*)malloc((sum) * sizeof(int));
-
-    for(j = 1; j <= sum; j++)               //j goes from 1 to 8
-    {
-        for(i = 1; i <= noofcoins; i++)     //i goes from 1 to 3, this is a column-wise traversal, [1,1] [2,1] [3,1]
+        // here i is the number f coins we are having to make the amount j
+        for (int j = 0; j <= amount; ++j)
         {
-            if(i == 1 && j < coins[i])
-                soln_matrix[i][j] = 999;    // infinity
 
-            else if(j < coins[i])
-                soln_matrix[i][j] = soln_matrix[i - 1][j];
-            
-            else if(i == 1 || i == j)
-                soln_matrix[i][j] = 1 + soln_matrix[1][j - coins[i]];
-            
+            if (j == 0)
+            {
+                // If the amount to be formed is 0 then no matter
+                // how many coins we have the answer will be 0
+                dp[i][j] = 0;
+            }
+            else if (i == 0)
+            {
+                // that is the number of coins that we have are 0
+                // then we assign dp[i][j] as 10^5
+                dp[i][j] = 1e5;
+            }
+            else if (coins[i - 1] > j)
+            {
+                // that is we are not able to include the coin
+                // we exclude it and go one level back and copy the solution
+                dp[i][j] = dp[i - 1][j];
+            }
+
             else
             {
-                if(soln_matrix[i - 1][j] < (1 + soln_matrix[i][j - coins[i]]))
-                    soln_matrix[i][j] = soln_matrix[i - 1][j];
-                else
-                    soln_matrix[i][j] = 1 + soln_matrix[i][j - coins[i]];
+                // now we can include the coin to make up the amount
+                // now we have to take the min of including and not including the coin
+                // dp[i][j]=min(inclusion,exclusion)
+                dp[i][j] = min(1 + dp[i][j - coins[i - 1]], dp[i - 1][j]);
             }
         }
     }
-    
-    i = noofcoins; 
-    j = sum; 
-    k = 0;
-    selected_coins[k] = 0;
-    while(j > 0)
+
+    for (int i = 0; i <= n_coins; i++)
     {
-        if(soln_matrix[i][j] == soln_matrix[i - 1][j])
-            i--;
+        for (int j = 0; j <= amount; j++)
+        {
+            printf("%d ", dp[i][j]);
+        }
+        printf("\n");
+    }
+    int selected[n_coins];
+    int i = n_coins;
+    int j = amount;
+    int k = 0;
+    while (j > 0)
+    {
+        if ((dp[i][j] != dp[i - 1][j]))
+        {
+            selected[k] = coins[i - 1];
+            k++;
+            j -= coins[i - 1];
+        }
         else
         {
-            selected_coins[k] = coins[i];
-            k++;
-            j -= coins[i];
+            i--;
         }
     }
-
-    selected_coins[k] = -1;
-    return selected_coins;
-}
-
-void main()
-{
-    int noofcoins = 0, i, j, k, sum;           
-    int* coins;
-    int* selected_coins;         
-    system("cls");
-
-    printf("Enter the number of coins available: ");
-    scanf("%d",&noofcoins);
-    coins = (int*)malloc((noofcoins) * sizeof(int));
-
-    printf("\n");
-    coins[0] = 0;
-    for(i = 1; i <= noofcoins; i++)
+    if (dp[n_coins][amount] < 1e5)
     {
-        printf("Enter Coin %d: ", i);
-        scanf("%d",&coins[i]);
+        printf("The selected coins are: ");
+        for (int i = 0; i < k; i++)
+        {
+            printf("%d ", selected[i]);
+        }
+        printf("\n");
     }
 
-    printf("\nNow enter the amount sum to be achieved: ");
-    scanf("%d",&sum);
+    return dp[n_coins][amount] > 1e4 ? -1 : dp[n_coins][amount];
+}
 
-    int soln_matrix[noofcoins + 1][sum + 1];                // +1 because >> for e.g: rows ~ 0, 1, 2, 3 and columns ~ 0, 1, 2, 3, 4, 5, 6, 7, 8         
-    initializer(noofcoins, sum, soln_matrix);
+int main()
+{
 
-    selected_coins = coinchange(noofcoins, sum, soln_matrix, coins);
-    printf("\nWork Matrix: \n\n");
-    printer(noofcoins, sum, soln_matrix);
-    
-    printf("\nSelected coins to pay the sum: ");
-    for(i = 0; selected_coins[i] != -1; i++)
-        printf("%d ", selected_coins[i]);
-    printf("\n\n"); 
+    int n_coins;
+    int amount;
+    printf("Enter the amount to be formed:");
+    scanf("%d", &amount);
+    printf("Enter the number of coins:");
+    scanf("%d", &n_coins);
+    int coins[n_coins];
+    printf("Enter the coins\n");
+    for (int i = 0; i < n_coins; i++)
+    {
+        printf("Enter the value of coin %d ", i + 1);
+        scanf("%d", &coins[i]);
+    }
+    int answer = coinChangeDP(coins, n_coins, amount);
+    if (answer == -1)
+    {
+        printf("Amount cannot be formed with the coins");
+    }
+    else
+    {
+        printf("Minimum number of coins %d", answer);
+    }
 }
