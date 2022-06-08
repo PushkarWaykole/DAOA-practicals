@@ -20,9 +20,9 @@ def kmt(txt,pat):
         if j==len(pat)-1:
             print(f"Pattern found at index {i-j}")
             j=0
-            i+=1
+            
         
-        elif pat[j+1]==txt[i]:
+        elif i<len(txt) and pat[j+1]==txt[i]:
             j+=1
             i+=1
         else:
